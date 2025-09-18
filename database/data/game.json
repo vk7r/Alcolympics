@@ -1,0 +1,20 @@
+{
+  "_default": {
+    "1": {
+      "name": "kangas",
+      "klunkar_druckna": 10000000000000000000,
+      "klunkar_givna": 0,
+      "Ws": 0,
+      "Ls": 0,
+      "date": "2025-09-18"
+    },
+    "2": {
+      "name": "freddie",
+      "klunkar_druckna": 0,
+      "klunkar_givna": 0,
+      "Ws": 0,
+      "Ls": 0,
+      "date": "2025-09-18"
+    }
+  }
+}

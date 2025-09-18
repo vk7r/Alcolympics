@@ -1,6 +1,7 @@
 import sys
 import time
 import os
+import random
 from rich.console import Console
 from rich.panel import Panel
 from rich.align import Align
@@ -8,6 +9,8 @@ from rich.prompt import Prompt
 from rich.table import Table
 from rich.text import Text
 from rich.prompt import Confirm
+
+from artifacts.BarkaOlympicsV2 import main
 
 # Import database functions
 sys.path.append(os.path.join(os.path.dirname(__file__), 'database'))
@@ -184,7 +187,7 @@ def main_menu():
     
     while True:
         choice = Prompt.ask("[bold hot_pink3]>>> Select an option (1-3)[/bold hot_pink3]", 
-                          choices=["1", "2", "3"], default="1")
+                          choices=["1", "2", "3", "-1"], show_choices=False)
         if choice == "1":
             start_playing()
             break
@@ -194,6 +197,10 @@ def main_menu():
         elif choice == "3":
             console.print("\n[bold hot_pink3]Thanks for playing! Goodbye! 🍻[/bold hot_pink3]\n")
             sys.exit()
+        elif choice == "-1":
+            main()
+            break
+
 
 def start_playing():
     console.clear()

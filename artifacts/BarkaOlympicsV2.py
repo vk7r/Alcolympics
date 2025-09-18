@@ -1974,11 +1974,7 @@ def Bärka_Bussen(spelar_lista, drink_take):
 
 # Roulette, siffror och färg
 
-
-#----------------------------------------------------------------------------
-
-if __name__ == "__main__":
-
+def main():
     standby_turtle_screen()
 
     # Skapar lista med Spelare och 2 "klunk-lexikon"
@@ -2053,3 +2049,9 @@ if __name__ == "__main__":
                 time.sleep(0.5)
             elif quit_or_nah == "y":
                 break
+
+#----------------------------------------------------------------------------
+
+if __name__ == "__main__":
+    main()
+    

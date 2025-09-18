@@ -1,6 +1,7 @@
 import sys
 import time
 import os
+import importlib.util
 from rich.console import Console
 from rich.panel import Panel
 from rich.align import Align
@@ -34,6 +35,73 @@ console = Console()
 
 # Global game session object
 game_session = GameSession()
+
+def discover_games():
+    """Discover available games in the games folder"""
+    games_folder = os.path.join(os.path.dirname(__file__), 'games')
+    games = []
+    
+    if not os.path.exists(games_folder):
+        return games
+    
+    for item in os.listdir(games_folder):
+        game_path = os.path.join(games_folder, item)
+        if os.path.isdir(game_path):
+            start_file = os.path.join(game_path, 'start.py')
+            if os.path.exists(start_file):
+                games.append(item)
+    
+    return sorted(games)
+
+def start_game(game_name):
+    """Start a game by importing and running its start_game function"""
+    try:
+        # Path to the game's start.py file
+        game_folder = os.path.join(os.path.dirname(__file__), 'games', game_name)
+        start_file = os.path.join(game_folder, 'start.py')
+        
+        # Import the game module
+        spec = importlib.util.spec_from_file_location(f"{game_name}_game", start_file)
+        game_module = importlib.util.module_from_spec(spec)
+        
+        # Add the game folder to sys.path temporarily so the game can import other modules
+        original_path = sys.path.copy()
+        sys.path.insert(0, game_folder)
+        
+        try:
+            spec.loader.exec_module(game_module)
+            
+            # Call the game's start_game function
+            if hasattr(game_module, 'start_game'):
+                game_stats = game_module.start_game(game_session)
+                
+                # Update the database with the game results
+                if game_stats:
+                    for player, stats in game_stats.items():
+                        try:
+                            db.increment_stats(
+                                player,
+                                klunkar_druckna=stats.klunkar_druckna,
+                                klunkar_givna=stats.klunkar_givna,
+                                Ws=stats.Ws,
+                                Ls=stats.Ls,
+                                games_played=stats.games_played
+                            )
+                        except Exception as e:
+                            console.print(f"[red]Error updating stats for {player}: {e}[/red]")
+                
+                return True
+            else:
+                console.print(f"[red]Error: {game_name} doesn't have a start_game function[/red]")
+                return False
+                
+        finally:
+            # Restore original sys.path
+            sys.path = original_path
+            
+    except Exception as e:
+        console.print(f"[red]Error loading game '{game_name}': {e}[/red]")
+        return False
 
 def fancy_welcome():
     # Larger Olympic rings ASCII art with better spacing
@@ -325,36 +393,53 @@ def add_players():
     time.sleep(2)
 
 def game_selection_menu():
-    """Display available games menu"""
+    """Display available games menu with dynamically discovered games"""
     console.clear()
     
-    games_menu = """
+    # Discover available games
+    available_games = discover_games()
+    console.print(f"[dim]DEBUG: Found {len(available_games)} games: {available_games}[/dim]")
     
-    ╔════════════════════════════════════════════╗
-    ║                                            ║
-    ║           [bold cyan]1.[/bold cyan]  BEER PONG                    ║
-    ║                                            ║
-    ║           [bold cyan]2.[/bold cyan]  FLIP CUP                     ║
-    ║                                            ║
-    ║           [bold cyan]3.[/bold cyan]  KINGS CUP                    ║
-    ║                                            ║
-    ║           [bold cyan]4.[/bold cyan]  NEVER HAVE I EVER           ║
-    ║                                            ║
-    ║           [bold cyan]5.[/bold cyan]  BACK TO MAIN MENU           ║
-    ║                                            ║
-    ╚════════════════════════════════════════════╝
+    if not available_games:
+        console.print(Panel(
+            Align.center(
+                "\n[bold red]❌ NO GAMES FOUND ❌[/bold red]\n\n"
+                "[bold]No games were found in the games folder![/bold]\n"
+                "[dim]Make sure games are properly installed in subfolders with start.py files[/dim]\n",
+                vertical="middle"
+            ),
+            border_style="red",
+            width=70,
+            height=12,
+            padding=(2, 5),
+            style="on grey11"
+        ), justify="center")
+        
+        input("\n[bold hot_pink3]Press Enter to return to main menu...[/bold hot_pink3]")
+        return False
     
-    """
+    # Build dynamic menu
+    menu_text = "\n\n════════════════════════════════════════════\n\n"
+    
+    for i, game in enumerate(available_games, 1):
+        # Format game name (capitalize and replace underscores with spaces)
+        display_name = game.replace('_', ' ').title()
+        menu_text += f"[bold cyan]{i}.[/bold cyan]  {display_name}\n\n"
+    
+    # Add back to main menu option
+    back_option = len(available_games) + 1
+    menu_text += f"[bold cyan]{back_option}.[/bold cyan]  BACK TO MAIN MENU\n\n"
+    menu_text += "════════════════════════════════════════════\n\n"
     
     games_panel = Panel(
         Align.center(
-            games_menu,
+            menu_text,
             vertical="middle"
         ),
         title="[bold hot_pink3]═══ SELECT GAME ═══[/bold hot_pink3]",
         border_style="hot_pink3",
-        width=70,
-        height=20,
+        width=80,
+        height=30 + len(available_games) * 2,
         padding=(2, 5),
         style="on grey11"
     )
@@ -366,59 +451,37 @@ def game_selection_menu():
     
     console.print(games_panel, justify="center")
     
+    # Create valid choices list
+    valid_choices = [str(i) for i in range(1, len(available_games) + 2)]
+    
     while True:
-        choice = Prompt.ask("[bold hot_pink3]>>> Select a game (1-5)[/bold hot_pink3]", 
-                          choices=["1", "2", "3", "4", "5"], default="1")
+        choice = Prompt.ask(f"[bold hot_pink3]>>> Select a game (1-{len(available_games) + 1})[/bold hot_pink3]", 
+                          choices=valid_choices)
         
-        if choice == "1":
-            play_game("Beer Pong")
-            break
-        elif choice == "2":
-            play_game("Flip Cup")
-            break
-        elif choice == "3":
-            play_game("Kings Cup")
-            break
-        elif choice == "4":
-            play_game("Never Have I Ever")
-            break
-        elif choice == "5":
-            return False  # Return to main menu
-    
-    return True  # Continue game loop
-
-def play_game(game_name):
-    """Play the selected game"""
-    console.clear()
-    
-    console.print(Panel(
-        Align.center(
-            f"\n[bold hot_pink3]🎮 {game_name.upper()} 🎮[/bold hot_pink3]\n\n"
-            f"[bold]Now playing: {game_name}[/bold]\n\n"
-            f"[bold hot_pink3]Players:[/bold hot_pink3] {', '.join(game_session.players)}\n\n"
-            "[dim](Game implementation coming soon...)[/dim]\n\n"
-            "[bold]For now, manually update player stats![/bold]\n",
-            vertical="middle"
-        ),
-        border_style="hot_pink3",
-        width=80,
-        height=15,
-        padding=(2, 5),
-        style="on grey11"
-    ), justify="center")
-    
-    # Simulate game play - for now just increment games played
-    for player in game_session.players:
-        try:
-            db.increment_stats(player, games_played=1)
-        except:
-            pass
-    
-    console.print("\n[bold green]✓ Game completed! Stats updated.[/bold green]")
-    
-    # Ask if they want to play another game
-    play_again = Confirm.ask("\n[bold hot_pink3]Play another game?[/bold hot_pink3]")
-    return play_again
+        choice_num = int(choice)
+        
+        if choice_num <= len(available_games):
+            # Start the selected game
+            selected_game = available_games[choice_num - 1]
+            console.clear()
+            console.print(f"\n[bold hot_pink3]🎮 Starting {selected_game.replace('_', ' ').title()}... 🎮[/bold hot_pink3]\n")
+            time.sleep(1)
+            
+            success = start_game(selected_game)
+            
+            if success:
+                console.print(f"\n[bold green]✅ {selected_game.replace('_', ' ').title()} completed successfully![/bold green]")
+                console.print("[dim]Player stats have been updated in the database.[/dim]")
+            else:
+                console.print(f"\n[bold red]❌ Error running {selected_game.replace('_', ' ').title()}[/bold red]")
+            
+            # Ask if they want to play another game
+            play_again = Confirm.ask("\n[bold hot_pink3]Play another game?[/bold hot_pink3]")
+            return play_again
+            
+        else:
+            # Back to main menu
+            return False
 
 def main_game_loop():
     """Main game loop - add players then game selection"""

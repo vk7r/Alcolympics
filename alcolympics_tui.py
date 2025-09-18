@@ -1,7 +1,6 @@
 import sys
 import time
 import os
-import random
 from rich.console import Console
 from rich.panel import Panel
 from rich.align import Align
@@ -16,10 +15,25 @@ from artifacts.BarkaOlympicsV2 import main
 sys.path.append(os.path.join(os.path.dirname(__file__), 'database'))
 import database.db as db
 
+class GameSession:
+    def __init__(self):
+        self.players = []
+        self.stats = {}
+
+class GameStats:
+    def __init__(self):
+        self.klunkar_druckna = 0
+        self.klunkar_givna = 0
+        self.Ws = 0
+        self.Ls = 0
+        self.games_played = 0
+
+
+
 console = Console()
 
-# Global list to store current game session players
-current_players = []
+# Global game session object
+game_session = GameSession()
 
 def fancy_welcome():
     # Larger Olympic rings ASCII art with better spacing
@@ -258,7 +272,6 @@ def start_playing():
 
 def add_players():
     """Add players to the current game session"""
-    global current_players
     console.clear()
     
     console.print(Panel(
@@ -274,32 +287,41 @@ def add_players():
         style="on grey11"
     ), justify="center")
     
-    current_players = []
+    game_session.players = []
     while True:
-        if current_players:
-            player_list = ", ".join(current_players)
+        if game_session.players:
+            player_list = ", ".join(game_session.players)
             console.print(f"\n[bold hot_pink3]Current players:[/bold hot_pink3] {player_list}")
         
         name = Prompt.ask("\n[bold hot_pink3]Enter player name (or 'done' to finish)[/bold hot_pink3]")
         
         if name.lower() == 'done':
-            if len(current_players) < 1:
+            if len(game_session.players) < 1:
                 console.print("[bold red]You need at least 1 player to start![/bold red]")
                 continue
             break
         
-        if name and name not in current_players:
-            current_players.append(name)
+        if name and name not in game_session.players:
+            game_session.players.append(name)
             # Add player to database if they don't exist today
-            try:
-                db.add_player(name)
+            if (db.add_player(name)):
                 console.print(f"[green]✓ Added {name}[/green]")
-            except:
-                console.print(f"[yellow]⚠ {name} already exists in today's database[/yellow]")
-        elif name in current_players:
+                game_session.stats[name] = GameStats()
+            else:
+                console.print(f"[yellow]⚠ {name} already exists in today's database, continuing on same stats[/yellow]")
+                game_session.stats[name] = GameStats()
+                # If player exists, load their stats from DB
+                existing = db.get_player(name)
+                if existing:
+                    game_session.stats[name].klunkar_druckna = existing.get("klunkar_druckna", 0)
+                    game_session.stats[name].klunkar_givna = existing.get("klunkar_givna", 0)
+                    game_session.stats[name].Ws = existing.get("Ws", 0)
+                    game_session.stats[name].Ls = existing.get("Ls", 0)
+                    game_session.stats[name].games_played = existing.get("games_played", 0)
+        elif name in game_session.players:
             console.print("[red]Player already added![/red]")
     
-    console.print(f"\n[bold green]✓ {len(current_players)} players ready to play![/bold green]")
+    console.print(f"\n[bold green]✓ {len(game_session.players)} players ready to play![/bold green]")
     time.sleep(2)
 
 def game_selection_menu():
@@ -338,8 +360,8 @@ def game_selection_menu():
     )
     
     # Show current players
-    if current_players:
-        player_list = ", ".join(current_players)
+    if game_session.players:
+        player_list = ", ".join(game_session.players)
         console.print(f"\n[bold hot_pink3]Players:[/bold hot_pink3] {player_list}\n")
     
     console.print(games_panel, justify="center")
@@ -373,7 +395,7 @@ def play_game(game_name):
         Align.center(
             f"\n[bold hot_pink3]🎮 {game_name.upper()} 🎮[/bold hot_pink3]\n\n"
             f"[bold]Now playing: {game_name}[/bold]\n\n"
-            f"[bold hot_pink3]Players:[/bold hot_pink3] {', '.join(current_players)}\n\n"
+            f"[bold hot_pink3]Players:[/bold hot_pink3] {', '.join(game_session.players)}\n\n"
             "[dim](Game implementation coming soon...)[/dim]\n\n"
             "[bold]For now, manually update player stats![/bold]\n",
             vertical="middle"
@@ -386,7 +408,7 @@ def play_game(game_name):
     ), justify="center")
     
     # Simulate game play - for now just increment games played
-    for player in current_players:
+    for player in game_session.players:
         try:
             db.increment_stats(player, games_played=1)
         except:
@@ -400,11 +422,9 @@ def play_game(game_name):
 
 def main_game_loop():
     """Main game loop - add players then game selection"""
-    global current_players
-    
     while True:
         # First, add players if none exist
-        if not current_players:
+        if not game_session.players:
             add_players()
         
         # Game selection menu
@@ -414,7 +434,7 @@ def main_game_loop():
             # Ask if they want to start a new session or return to main menu
             new_session = Confirm.ask("\n[bold hot_pink3]Start a new game session?[/bold hot_pink3]")
             if new_session:
-                current_players = []  # Reset players
+                game_session.players = []  # Reset players
                 continue
             else:
                 break  # Return to main menu

@@ -1980,15 +1980,15 @@ def main():
     # Skapar lista med Spelare och 2 "klunk-lexikon"
     drink_take = {}
     drink_give = {}
+    playerlist = []
     ask2 = True
     while ask2:
         try:
             p_amount = int(input(" Antalet Spelare: "))
-            playerlist = []
             ask2 = False
         except:
             print("Felaktig input, Försök igen: ")
-    for x in range(p_amount):
+    for _ in range(p_amount):
         player = input(" Spelare: ")
         playerlist.append(player)
         drink_take[player] = 0

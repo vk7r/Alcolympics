@@ -493,6 +493,7 @@ def main_game_loop():
         # Game selection menu
         continue_playing = game_selection_menu()
         
+        
         if not continue_playing:
             # Ask if they want to start a new session or return to main menu
             new_session = Confirm.ask("\n[bold hot_pink3]Start a new game session?[/bold hot_pink3]")

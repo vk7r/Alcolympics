@@ -7,8 +7,16 @@ from rich.align import Align
 from rich.prompt import Prompt
 from rich.table import Table
 from rich.text import Text
+from rich.prompt import Confirm
+
+# Import database functions
+sys.path.append(os.path.join(os.path.dirname(__file__), 'database'))
+import database.db as db
 
 console = Console()
+
+# Global list to store current game session players
+current_players = []
 
 def fancy_welcome():
     # Larger Olympic rings ASCII art with better spacing
@@ -205,24 +213,7 @@ def start_playing():
         style="on grey11"
     ), justify="center")
     
-    time.sleep(1)
-    
-    # Animated loading bar
-    console.print("\n")
-    loading_panel = Panel(
-        Align.center(
-            "[bold hot_pink3]Loading game...[/bold hot_pink3]\n\n"
-            "🍺 🍷 🍸 🍻 🥃 🍶",
-            vertical="middle"
-        ),
-        border_style="hot_pink3",
-        width=60,
-        height=8,
-        padding=(1, 3),
-        style="on grey11"
-    )
-    console.print(loading_panel, justify="center")
-    time.sleep(2)
+    time.sleep(3)
     
     # Progress bar animation
     console.print("\n")
@@ -241,8 +232,7 @@ def start_playing():
     # Final message
     final_panel = Panel(
         Align.center(
-            "\n[bold hot_pink3]🎉 Ready to play! 🎉[/bold hot_pink3]\n\n"
-            "[dim](Feature coming soon...)[/dim]\n",
+            "\n[bold hot_pink3]🎉 Ready to play! 🎉[/bold hot_pink3]\n\n",
             vertical="middle"
         ),
         border_style="hot_pink3",
@@ -251,9 +241,178 @@ def start_playing():
         padding=(1, 3),
         style="on grey11"
     )
+    console.clear()
     console.print(final_panel, justify="center")
     
     time.sleep(2)
+    
+    # Start main game loop
+    main_game_loop()
+
+def add_players():
+    """Add players to the current game session"""
+    global current_players
+    console.clear()
+    
+    console.print(Panel(
+        Align.center(
+            "\n[bold hot_pink3]🎮 ADD PLAYERS 🎮[/bold hot_pink3]\n\n"
+            "[bold]Enter player names for this game session[/bold]\n",
+            vertical="middle"
+        ),
+        border_style="hot_pink3",
+        width=70,
+        height=10,
+        padding=(2, 5),
+        style="on grey11"
+    ), justify="center")
+    
+    current_players = []
+    while True:
+        if current_players:
+            player_list = ", ".join(current_players)
+            console.print(f"\n[bold hot_pink3]Current players:[/bold hot_pink3] {player_list}")
+        
+        name = Prompt.ask("\n[bold hot_pink3]Enter player name (or 'done' to finish)[/bold hot_pink3]")
+        
+        if name.lower() == 'done':
+            if len(current_players) < 1:
+                console.print("[bold red]You need at least 1 player to start![/bold red]")
+                continue
+            break
+        
+        if name and name not in current_players:
+            current_players.append(name)
+            # Add player to database if they don't exist today
+            try:
+                db.add_player(name)
+                console.print(f"[green]✓ Added {name}[/green]")
+            except:
+                console.print(f"[yellow]⚠ {name} already exists in today's database[/yellow]")
+        elif name in current_players:
+            console.print("[red]Player already added![/red]")
+    
+    console.print(f"\n[bold green]✓ {len(current_players)} players ready to play![/bold green]")
+    time.sleep(2)
+
+def game_selection_menu():
+    """Display available games menu"""
+    console.clear()
+    
+    games_menu = """
+    
+    ╔════════════════════════════════════════════╗
+    ║                                            ║
+    ║           [bold cyan]1.[/bold cyan]  BEER PONG                    ║
+    ║                                            ║
+    ║           [bold cyan]2.[/bold cyan]  FLIP CUP                     ║
+    ║                                            ║
+    ║           [bold cyan]3.[/bold cyan]  KINGS CUP                    ║
+    ║                                            ║
+    ║           [bold cyan]4.[/bold cyan]  NEVER HAVE I EVER           ║
+    ║                                            ║
+    ║           [bold cyan]5.[/bold cyan]  BACK TO MAIN MENU           ║
+    ║                                            ║
+    ╚════════════════════════════════════════════╝
+    
+    """
+    
+    games_panel = Panel(
+        Align.center(
+            games_menu,
+            vertical="middle"
+        ),
+        title="[bold hot_pink3]═══ SELECT GAME ═══[/bold hot_pink3]",
+        border_style="hot_pink3",
+        width=70,
+        height=20,
+        padding=(2, 5),
+        style="on grey11"
+    )
+    
+    # Show current players
+    if current_players:
+        player_list = ", ".join(current_players)
+        console.print(f"\n[bold hot_pink3]Players:[/bold hot_pink3] {player_list}\n")
+    
+    console.print(games_panel, justify="center")
+    
+    while True:
+        choice = Prompt.ask("[bold hot_pink3]>>> Select a game (1-5)[/bold hot_pink3]", 
+                          choices=["1", "2", "3", "4", "5"], default="1")
+        
+        if choice == "1":
+            play_game("Beer Pong")
+            break
+        elif choice == "2":
+            play_game("Flip Cup")
+            break
+        elif choice == "3":
+            play_game("Kings Cup")
+            break
+        elif choice == "4":
+            play_game("Never Have I Ever")
+            break
+        elif choice == "5":
+            return False  # Return to main menu
+    
+    return True  # Continue game loop
+
+def play_game(game_name):
+    """Play the selected game"""
+    console.clear()
+    
+    console.print(Panel(
+        Align.center(
+            f"\n[bold hot_pink3]🎮 {game_name.upper()} 🎮[/bold hot_pink3]\n\n"
+            f"[bold]Now playing: {game_name}[/bold]\n\n"
+            f"[bold hot_pink3]Players:[/bold hot_pink3] {', '.join(current_players)}\n\n"
+            "[dim](Game implementation coming soon...)[/dim]\n\n"
+            "[bold]For now, manually update player stats![/bold]\n",
+            vertical="middle"
+        ),
+        border_style="hot_pink3",
+        width=80,
+        height=15,
+        padding=(2, 5),
+        style="on grey11"
+    ), justify="center")
+    
+    # Simulate game play - for now just increment games played
+    for player in current_players:
+        try:
+            db.increment_stats(player, games_played=1)
+        except:
+            pass
+    
+    console.print("\n[bold green]✓ Game completed! Stats updated.[/bold green]")
+    
+    # Ask if they want to play another game
+    play_again = Confirm.ask("\n[bold hot_pink3]Play another game?[/bold hot_pink3]")
+    return play_again
+
+def main_game_loop():
+    """Main game loop - add players then game selection"""
+    global current_players
+    
+    while True:
+        # First, add players if none exist
+        if not current_players:
+            add_players()
+        
+        # Game selection menu
+        continue_playing = game_selection_menu()
+        
+        if not continue_playing:
+            # Ask if they want to start a new session or return to main menu
+            new_session = Confirm.ask("\n[bold hot_pink3]Start a new game session?[/bold hot_pink3]")
+            if new_session:
+                current_players = []  # Reset players
+                continue
+            else:
+                break  # Return to main menu
+    
+    # Return to main menu
     main_menu()
 
 def view_leaderboard():
@@ -272,20 +431,45 @@ def view_leaderboard():
     
     table.add_column("RANK", style="bold yellow", justify="center", width=15)
     table.add_column("PLAYER", style="bold white", justify="center", width=25)
-    table.add_column("SCORE", style="bold hot_pink3", justify="center", width=20)
-    table.add_column("GAMES", style="bold", justify="center", width=20)
+    table.add_column("WINS", style="bold hot_pink3", justify="center", width=15)
+    table.add_column("GAMES", style="bold", justify="center", width=15)
+    table.add_column("DRINKS", style="bold cyan", justify="center", width=15)
     
-    # Placeholder data with medals for top 3
-    leaderboard = [
-        ("🥇 1st", "Alice", "42", "7"),
-        ("🥈 2nd", "Bob", "37", "6"),
-        ("🥉 3rd", "Charlie", "29", "5"),
-        ("  4th", "David", "24", "4"),
-        ("  5th", "Eve", "18", "3"),
-    ]
+    try:
+        # Get leaderboard data from database
+        wins_leaderboard = db.leaderboard_by_wins(10)
+        games_data = db.leaderboard_by_games_played(10)
+        drinks_data = db.leaderboard_by_klunkar_druckna(10)
+        
+        # Convert to dictionaries for easier lookup
+        games_dict = dict(games_data)
+        drinks_dict = dict(drinks_data)
+        
+        # Create leaderboard entries
+        leaderboard = []
+        medals = ["🥇", "🥈", "🥉"]
+        
+        for i, (name, wins) in enumerate(wins_leaderboard):
+            rank_display = f"{medals[i]} {i+1}" if i < 3 else f"  {i+1}"
+            games = games_dict.get(name, 0)
+            drinks = drinks_dict.get(name, 0)
+            leaderboard.append((rank_display, name, str(wins), str(games), str(drinks)))
     
-    for rank, name, score, games in leaderboard:
-        table.add_row(rank, name, score, games)
+    except Exception as e:
+        # Fallback to placeholder data if database is empty or has issues
+        leaderboard = [
+            ("🥇 1st", "Alice", "42", "7", "15"),
+            ("🥈 2nd", "Bob", "37", "6", "12"),
+            ("🥉 3rd", "Charlie", "29", "5", "10"),
+            ("  4th", "David", "24", "4", "8"),
+            ("  5th", "Eve", "18", "3", "6"),
+        ]
+    
+    if not leaderboard:
+        leaderboard = [("--", "No players yet!", "0", "0", "0")]
+    
+    for rank, name, wins, games, drinks in leaderboard:
+        table.add_row(rank, name, wins, games, drinks)
     
     # Center the table in a panel
     leaderboard_panel = Panel(

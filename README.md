@@ -10,7 +10,7 @@ To proceed, you **MUST** follow the sacred rules of the game:
 
 ## Got an idea of a game? Contribute! (shurda)
 
-`main.py` contains the game’s main loop, a terminal-based menu that serves as the hub and dynamically adds all games placed in the `games/` folder.
+`main.py` contains the game’s main loop, a terminal-based menu that serves as the hub and dynamically adds all games placed in the `games` folder.
 
 You can build your game with any GUI or language you like, but it **MUST** be wrapped in a Python file so it can be integrated with the main loop.
 

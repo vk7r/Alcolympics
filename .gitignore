@@ -5,4 +5,4 @@ __pycache__/
 *.pyd
 
 # Ignore data folder and its contents
-database/data/
+database/data/*

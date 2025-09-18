@@ -148,11 +148,11 @@ def main_menu():
     
     ╔════════════════════════════════════════════╗
     ║                                            ║
-    ║           [bold cyan]1.[/bold cyan]  START PLAYING              ║
+    ║           [bold cyan]1.[/bold cyan]  START PLAYING                ║
     ║                                            ║
-    ║           [bold cyan]2.[/bold cyan]  VIEW LEADERBOARD           ║
+    ║           [bold cyan]2.[/bold cyan]  VIEW LEADERBOARD             ║
     ║                                            ║
-    ║           [bold cyan]3.[/bold cyan]  EXIT                       ║
+    ║           [bold cyan]3.[/bold cyan]  EXIT                         ║
     ║                                            ║
     ╚════════════════════════════════════════════╝
     
@@ -163,18 +163,19 @@ def main_menu():
             menu_text,
             vertical="middle"
         ),
-        title="[bold green]═══ MAIN MENU ═══[/bold green]",
-        border_style="green",
-        width=60,
+        title="[bold hot_pink3]═══ MAIN MENU ═══[/bold hot_pink3]",
+        border_style="hot_pink3",
+        width=70,
         height=20,
-        padding=(2, 5)
+        padding=(2, 5),
+        style="on grey11"
     )
     console.print("\n\n")
     console.print(menu_panel, justify="center")
     console.print("\n")
     
     while True:
-        choice = Prompt.ask("[bold yellow]>>> Select an option (1-3)[/bold yellow]", 
+        choice = Prompt.ask("[bold hot_pink3]>>> Select an option (1-3)[/bold hot_pink3]", 
                           choices=["1", "2", "3"], default="1")
         if choice == "1":
             start_playing()
@@ -183,25 +184,76 @@ def main_menu():
             view_leaderboard()
             break
         elif choice == "3":
-            console.print("\n[bold red]Thanks for playing! Goodbye! 🍻[/bold red]\n")
+            console.print("\n[bold hot_pink3]Thanks for playing! Goodbye! 🍻[/bold hot_pink3]\n")
             sys.exit()
 
 def start_playing():
     console.clear()
     console.print("\n\n\n")
+    
+    # Show initial message
     console.print(Panel(
         Align.center(
-            "\n\n[bold green]🎮 GAME STARTING SOON! 🎮[/bold green]\n\n"
-            "[yellow]Get ready for the ultimate drinking game experience![/yellow]\n\n"
-            "[dim](Feature coming soon...)[/dim]\n\n",
+            "\n\n[bold hot_pink3]🎮 GAME STARTING SOON! 🎮[/bold hot_pink3]\n\n"
+            "[bold]Get ready for the ultimate drinking game experience![/bold]\n\n",
             vertical="middle"
         ), 
-        border_style="magenta",
+        border_style="hot_pink3",
         width=80,
-        height=15,
-        padding=(2, 5)
+        height=12,
+        padding=(2, 5),
+        style="on grey11"
     ), justify="center")
-    time.sleep(3)
+    
+    time.sleep(1)
+    
+    # Animated loading bar
+    console.print("\n")
+    loading_panel = Panel(
+        Align.center(
+            "[bold hot_pink3]Loading game...[/bold hot_pink3]\n\n"
+            "🍺 🍷 🍸 🍻 🥃 🍶",
+            vertical="middle"
+        ),
+        border_style="hot_pink3",
+        width=60,
+        height=8,
+        padding=(1, 3),
+        style="on grey11"
+    )
+    console.print(loading_panel, justify="center")
+    time.sleep(2)
+    
+    # Progress bar animation
+    console.print("\n")
+    loading_chars = ["🍺", "🍷", "🍸", "🍻", "🥃", "🍶"]
+    for i in range(21):  # 0 to 20 for percentage
+        progress = "█" * i + "░" * (20 - i)
+        char = loading_chars[i % len(loading_chars)]
+        percentage = i * 5
+        console.clear()
+        loading_text = f"[bold hot_pink3]{char} Loading... {percentage}% [{progress}][/bold hot_pink3]"
+        console.print(loading_text, justify="center", end="")
+        time.sleep(0.15)
+    
+    console.print("\n\n")
+    
+    # Final message
+    final_panel = Panel(
+        Align.center(
+            "\n[bold hot_pink3]🎉 Ready to play! 🎉[/bold hot_pink3]\n\n"
+            "[dim](Feature coming soon...)[/dim]\n",
+            vertical="middle"
+        ),
+        border_style="hot_pink3",
+        width=50,
+        height=8,
+        padding=(1, 3),
+        style="on grey11"
+    )
+    console.print(final_panel, justify="center")
+    
+    time.sleep(2)
     main_menu()
 
 def view_leaderboard():
@@ -212,7 +264,7 @@ def view_leaderboard():
     table = Table(
         title="\n🏆 LEADERBOARD 🏆\n", 
         show_header=True, 
-        header_style="bold blue",
+        header_style="bold hot_pink3",
         box=None,  # Remove box for cleaner look
         padding=(1, 3),  # Add padding between columns
         width=80
@@ -220,8 +272,8 @@ def view_leaderboard():
     
     table.add_column("RANK", style="bold yellow", justify="center", width=15)
     table.add_column("PLAYER", style="bold white", justify="center", width=25)
-    table.add_column("SCORE", style="bold magenta", justify="center", width=20)
-    table.add_column("GAMES", style="bold cyan", justify="center", width=20)
+    table.add_column("SCORE", style="bold hot_pink3", justify="center", width=20)
+    table.add_column("GAMES", style="bold", justify="center", width=20)
     
     # Placeholder data with medals for top 3
     leaderboard = [
@@ -238,13 +290,14 @@ def view_leaderboard():
     # Center the table in a panel
     leaderboard_panel = Panel(
         Align.center(table),
-        border_style="blue",
+        border_style="hot_pink3",
         padding=(2, 5),
-        width=100
+        width=100,
+        style="on grey11"
     )
     
     console.print(leaderboard_panel, justify="center")
-    console.print("\n\n[bold cyan]>>> Press Enter to return to the main menu...[/bold cyan]")
+    console.print("\n\n[bold hot_pink3]>>> Press Enter to return to the main menu...[/bold hot_pink3]")
     input()
     main_menu()
 

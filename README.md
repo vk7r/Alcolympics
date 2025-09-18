@@ -8,7 +8,7 @@ To proceed, you **MUST** follow the sacred rules of the game:
 
 3. 🔁 **Follow Rule 1 & 2**
 
-## How to Contribute!
+## Got an idea of a game? Contribute! (shurda)
 
 `main.py` contains the game’s main loop, a terminal-based menu that serves as the hub and dynamically adds all games placed in the `games/` folder.
 

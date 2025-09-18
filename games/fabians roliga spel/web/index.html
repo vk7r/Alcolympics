@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>lalalalal</title>
+    <style>
+        body {
+            background: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            color: #0077cc;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+
+        div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .title {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 10vh;
+        }
+
+        p {
+            font-size: 18px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+
+<body>
+    <div class="title">
+        <h1>GET READY</h1>
+    </div>
+
+    <div>
+        <p id="player1-text">
+            ... <br> Gör dig själv redo. <br>
+            När du är redo, välj en motståndare och starta spelet! <br>
+            Må gud va med dig.
+
+        </p>
+    </div>
+
+    <div>
+        <div id="players-list" style="flex-direction: column; align-items: flex-start;">
+            <div id="player1"></div>
+            <div>
+                <label for="player2-select">Player 2:</label>
+                <select id="player2-select"></select>
+            </div>
+            <button id="start game">Start game</button>
+        </div>
+    </div>
+
+
+    <script>
+        const socket = new WebSocket("ws://localhost:8765");
+        let gamesession = null;
+        let players = [];
+        let player1 = null;
+
+        function updatePlayersUI() {
+            if (!players.length) return;
+            // Randomly select Player 1
+            player1 = players[Math.floor(Math.random() * players.length)];
+            document.getElementById("player1").textContent = "Player 1: " + player1;
+
+            // Update <p> with Player 1's name
+            document.getElementById("player1-text").innerHTML =
+                player1 + "... <br> Gör dig själv redo. <br>" +
+                "När du är redo, välj en motståndare och starta spelet! <br>" +
+                "Må gud va med dig.";
+
+            // Fill Player 2 select, excluding Player 1
+            const select = document.getElementById("player2-select");
+            select.innerHTML = "";
+            players.filter(p => p !== player1).forEach(p => {
+                const option = document.createElement("option");
+                option.value = p;
+                option.textContent = p;
+                select.appendChild(option);
+            });
+
+        }
+
+        socket.addEventListener("open", () => {
+            console.log("Connected to platform.");
+        });
+
+        socket.addEventListener("message", (event) => {
+            console.log("Platform response:", event.data);
+            try {
+                const data = JSON.parse(event.data);
+                if (data.gamesession) {
+                    gamesession = data.gamesession;
+                    // Extract player names from gamesession
+                    players = gamesession.map(playerObj => playerObj.name);
+                    updatePlayersUI();
+                }
+                if (data.action === "close") {
+                    window.close();
+                }
+            } catch (e) {
+                // Not a JSON message
+            }
+        });
+
+        document.getElementById("start game").addEventListener("click", () => {
+            // Use the gamesession object as needed
+            const result = { gamesession: gamesession }; // Send back the (possibly updated) gamesession
+            socket.send(JSON.stringify(result));
+            console.log("Result sent:", result);
+        });
+    </script>
+</body>
+
+</html>

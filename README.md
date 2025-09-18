@@ -2,15 +2,15 @@
 
 To proceed, you **MUST** follow the sacred rules of the game:
 
-1. 🎉 **Have Fun**
+1. **DO NOT TOUCH main.py**
 
-2. 🌳 **Branch Out When Creating New Games**
+2. 🎉 **Have Fun**
 
 3. 🔁 **Follow Rule 1 & 2**
 
 ## How to Contribute!
 
-main.py contains the game’s main loop, a terminal-based menu that acts as the hub.
+`main.py` contains the game’s main loop, a terminal-based menu that serves as the hub and dynamically adds all games placed in the `games/` folder.
 
 You can build your game with any GUI or language you like, but it **MUST** be wrapped in a Python file so it can be integrated with the main loop.
 
@@ -20,4 +20,3 @@ Your main file **MUST** be named **`start.py`** and **MUST** include a **`start_
 You can use the `GameSession` class provided by `main.py` to access all relevant game session data for your game.
 
 Don’t forget to add any new dependencies your game needs into requirements.txt.
-

@@ -629,7 +629,7 @@ def SnailRace(spelar_lista, drink_give):
         nplacement += 1
 
     rank_turtle.color("Orange")
-    for player in playerlist:
+    for player in spelar_lista:
         if bet_dict[player] == winner[0]:
             drink_give[player] += 5
             rank_turtle.write(f'Grattis {player}!',font=("Arial", 20, "normal"))
@@ -1015,465 +1015,6 @@ def Wheel_of_Bärka(spelar_lista, drink_give, drink_take):
     # Skriv namnet på spelaren som snurrar i rutan :)
 
 
-
-    print_centre("------------------------------BÄRKA BUSSEN------------------------------\n")
-
-    #FUNKTIONER----------------------
-    def jump(t, x, y):
-            t.penup()
-            t.goto(x, y)
-            t.pendown()
-
-    def make_turtle(x, y):
-        t = turtle.Turtle()
-        turtle.delay(0)
-        jump(t, x, y)
-        return t
-
-    #CARDS-----------------------
-
-    def blank_card_up(x, y):
-        w = 100
-        h = 150
-
-        t = make_turtle(x, y)
-        t.pensize(5)
-        t.speed(0)
-        t.hideturtle()
-        t.color('black')
-        t.fillcolor("White")
-        t.begin_fill()
-        for x in [w, h, w, h]:
-            t.forward(x)
-            t.left(90)
-        t.end_fill()
-        end_pos = t.pos()
-        end_heading = t.heading()
-
-        t.penup()
-        t.forward(33)
-        t.left(90)
-        t.forward(35)
-
-        return t
-
-    # Man skulle kunna iterera genom alla istället för att skriva alla.
-    def kort_2(x,y):
-        t = blank_card_up(x,y)
-        t.write("2", font=("Arial",50,"normal"))
-
-    def kort_3(x,y):
-        t = blank_card_up(x,y)
-        t.write("3", font=("Arial",50,"normal"))
-
-    def kort_4(x,y):
-        t = blank_card_up(x,y)
-        t.write("4", font=("Arial",50,"normal"))
-
-    def kort_5(x,y):
-        t = blank_card_up(x,y)
-        t.write("5", font=("Arial",50,"normal"))
-        
-    def kort_6(x,y):
-        t = blank_card_up(x,y)
-        t.write("6", font=("Arial",50,"normal"))
-
-    def kort_7(x,y):
-        t = blank_card_up(x,y)
-        t.write("7", font=("Arial",50,"normal"))
-
-    def kort_8(x,y):
-        t = blank_card_up(x,y)
-        t.write("8", font=("Arial",50,"normal"))
-
-    def kort_9(x,y):
-        t = blank_card_up(x,y)
-        t.write("9", font=("Arial",50,"normal"))
-
-    def kort_10(x,y):
-        t = blank_card_up(x,y)
-        t.left(90)
-        t.forward(23)
-        t.write("10", font=("Arial",50,"normal"))
-
-    def kort_knekt(x,y):
-        t = blank_card_up(x,y)
-        t.color("red")
-        t.left(90)
-        t.forward(23)
-        t.write("Kn", font=("Arial",50,"normal"))
-
-    def kort_dam(x,y):
-        t = blank_card_up(x,y)
-        t.color("red")
-        t.left(90)
-        t.forward(5)
-        t.write("D", font=("Arial",50,"normal"))
-
-    def kort_kung(x,y):
-        t = blank_card_up(x,y)
-        t.color("red")
-        t.left(90)
-        t.forward(5)
-        t.write("K", font=("Arial",50,"normal"))
-
-    def kort_ess(x,y):
-        t = blank_card_up(x,y)
-        t.color("red")
-        t.left(90)
-        t.forward(5)
-        t.write("E", font=("Arial",50,"normal"))
-
-    #TURTLE BILDER-----------------------
-
-    def background(x, y, w, h):
-            t = make_turtle(x, y)
-            t.speed(0)
-            t.hideturtle()
-            t.color('black')
-            t.fillcolor("bisque2")
-            t.begin_fill()
-            for x in [w, h, w, h]:
-                t.forward(x)
-                t.left(90)
-            t.end_fill()
-
-    def card_face_down(x, y, w, h):
-        t = make_turtle(x, y)
-        t.pensize(5)
-        t.speed(0)
-        t.hideturtle()
-        t.color('black')
-        t.fillcolor("DarkRed")
-        t.begin_fill()
-        for x in [w, h, w, h]:
-            t.forward(x)
-            t.left(90)
-        t.end_fill()
-        end_pos = t.pos()
-        end_heading = t.heading()
-
-        t.penup()
-        t.forward(33)
-        t.left(90)
-        t.forward(35)
-        t.write("?", font=("Arial",50,"normal"))
-        t.goto(end_pos)
-        t.setheading(end_heading)
-
-    def turn_card_face_up(random_card, vald_pos):
-        x = vald_pos[0]
-        y = vald_pos[1]
-        if random_card == 1:
-            kort_ess(x,y)
-
-        if random_card == 2:
-            kort_2(x,y)
-
-        if random_card == 3:
-            kort_3(x,y)
-
-        if random_card == 4:
-            kort_4(x,y)
-
-        if random_card == 5:
-            kort_5(x,y)
-
-        if random_card == 6:
-            kort_6(x,y)
-
-        if random_card == 7:
-            kort_7(x,y)
-
-        if random_card == 8:
-            kort_8(x,y)
-
-        if random_card == 9:
-            kort_9(x,y)
-
-        if random_card == 10:
-            kort_10(x,y)
-
-        if random_card == 11:
-            kort_knekt(x,y)
-
-        if random_card == 12:
-            kort_dam(x,y)
-
-        if random_card == 13:
-            kort_kung(x,y)
-
-    def start_layout():
-        background(-500,-500,1000,1000)
-
-        w = 100
-        h = 150
-
-        layer4_start_x = -275
-        layer4_start_y = -325
-
-        layer3_start_x = -200
-        layer3_start_y = -150
-
-        layer2_start_x = -125
-        layer2_start_y = 25
-
-        layer1_start_x = -50
-        layer1_start_y = 200
-
-        for x in range(11):
-            if x < 4: # layer 4
-                card_face_down(layer4_start_x, layer4_start_y, w, h)
-                layer4_start_x += w + w/2
-
-            elif 3 < x < 7: # layer 3
-                card_face_down(layer3_start_x,layer3_start_y, w, h)
-                layer3_start_x += w + w/2
-
-            elif 7 < x < 10: # layer 2
-                card_face_down(layer2_start_x, layer2_start_y, w, h)
-                layer2_start_x += w + w/2
-
-            elif x == 10: # final layer
-                card_face_down(layer1_start_x, layer1_start_y, w, h)
-
-    def layer_pointer(layer, prev_pointer= "none", prev_numbers="none"):
-        if prev_pointer != "none":
-            prev_pointer.hideturtle()
-        if prev_numbers != "none":
-            prev_numbers.clear()
-        pointer = turtle.Turtle()
-        pointer.color("Black")
-        pointer.fillcolor("yellow")
-        pointer.shapesize(8)
-        pointer.penup()
-
-        number_turtle = turtle.Turtle()
-        number_turtle.hideturtle()
-        number_turtle.penup()
-
-        if layer == 1:
-            pointer.goto(-350,-250)
-
-            jump_constant = 0
-            number = 1
-            for jumps in range(4):
-                number_turtle.goto(-225 + jump_constant, -350)
-                number_turtle.write(f'{number}',font=("arial","10","normal"))
-                jump_constant += 150
-                number += 1
-
-        if layer == 2:
-            pointer.goto(-250, -75)
-
-            jump_constant = 0
-            number = 1
-            for jumps in range(3):
-                number_turtle.goto(-150 + jump_constant, -175)
-                number_turtle.write(f'{number}',font=("arial","10","normal"))
-                jump_constant += 150
-                number += 1
-
-        if layer == 3:
-            pointer.goto(-175, 100)
-
-            jump_constant = 0
-            number = 1
-            for jumps in range(2):
-                number_turtle.goto(-75 + jump_constant, 0)
-                number_turtle.write(f'{number}',font=("arial","10","normal"))
-                jump_constant += 150
-                number += 1    
-
-
-        if layer == 4:
-            pointer.goto(-125, 275)
-
-            jump_constant = 0
-            number = 1
-            for jumps in range(1):
-                number_turtle.goto(0 + jump_constant, 175)
-                number_turtle.write(f'{number}',font=("arial","10","normal"))
-                jump_constant += 150
-                number += 1
-
-        return pointer, number_turtle
-    
-    
-    #------------------------------------------------------------
-    # fixa så att alla fyra kort är ngt random value. för just nu är det inte mening med flera kort
-    # kanske vid varje iteration göra en dict med position = kort
-    if __name__ == "__main__":
-
-        player_number = 1
-        print(" Vem ska snurra The Wheel of Bärka? ")
-        for player in spelar_lista:
-            print(f'{player_number}: {player}')
-            player_number += 1
-
-        ask = True
-        while ask:
-            try:
-                chosen_player = int(input("Vem ska köra bussen?: "))
-                print()
-                while chosen_player not in range(1,len(spelar_lista)+1):
-                    print("invalid input. try again")
-                    chosen_player = int(input("skriv numret på den valda spelaren: "))
-                for index in range(len(spelar_lista)+1):
-                    if index == chosen_player:
-                        confirmed_player = spelar_lista[index-1] # Detta är spelaren som kommer snurra hjulet
-                    
-                    ask = False
-            except:
-                print("felaktig input, försök igen: ")
-
-        visual_klunk_dict = {"klunkar":0}
-
-        # Position på kort, för varje lager
-        card_pos_dict_L4 = {"1":(-275,-325), "2":(-125,-325), "3":(25,-325), "4":(175,-325)} # Layer 4
-        card_pos_dict_L3 = {"1":(-200,-150), "2":(-50,-150), "3":(100,-150)} # Layer 3
-        card_pos_dict_L2 = {"1":(-125,25), "2":(25,25)} # Layer 2
-        card_pos_dict_L1 = {"1":(-50 ,200)} # Layer 1, kanske man inte behöver skriva in input för denna
-
-        #card_pos_dict = {"1":(-275,-325), "2":(-125,-325), "3":(25,-325), "4":(175,-325), "5":(-200,-150), "6":(-50,-150), "7":(100,-150), "8":(-125,25), "9":(25,25), "10":(-50 ,200)}
-
-        # Blanda korten på bordet:
-        value_list = [1,2,3,4,5,6,7,8,9,10,11,12,13]
-        start_layout()
-
-        #Klunk Turtle
-        klunk_turtle = turtle.Turtle()
-        klunk_turtle.hideturtle()
-        klunk_turtle.penup()
-        
-
-
-        # Max 4 rounds
-        layer = 1
-        buss_status = True
-        while buss_status:
-            while layer < 5: # runda 1 - 4
-                
-                klunk_turtle.clear()
-                klunk_turtle.goto(-400,325)
-                klunk_turtle.write(f'{confirmed_player}s',font=("Arial",40, "normal"))
-                klunk_turtle.goto(-400,280)
-                klunk_turtle.write(f'Klunkar: {visual_klunk_dict["klunkar"]}',font=("Arial",40, "normal"))
-
-                print("round:",layer)
-                current_random_card = random.choice(value_list) # tar fram ett slumpmässigt kort
-
-                if layer == 1: # 1 = lager 4 (yttre lagret)
-                    prev_turtle, prev_pointer = layer_pointer(layer) # pekaren. returnerar sköldpaddan så man can cleara den vid ny runda
-                    ask = True
-                    while ask:
-                        try:
-                            kort_man_vill_vända = input("vilket kort vill du vända? (1,2,3,4): ")
-                            pos_of_card = card_pos_dict_L4[kort_man_vill_vända]
-                            turn_card_face_up(current_random_card, pos_of_card)
-                            input("Press ENTER to continue")
-                            if current_random_card in [11,12,13,1]:
-                                print("Klätt Kort! Startar om!")
-                                turtle.Screen().clear()
-                                start_layout()
-                                visual_klunk_dict["klunkar"] += 3 # +3 klunkar till dict som skriver ut på skärm
-                                drink_take[confirmed_player] += 3 # +3 klunkar till den riktiga dict.
-                                ask = False
-                                layer = 1
-                                break
-                            elif current_random_card in [2,3,4,5,6,7,8,9,10]:
-                                ask = False
-                                layer += 1
-                                break
-                        except:
-                            print("Felaktig input. Försök igen")
-
-                elif layer == 2: # lager 3
-                    prev_turtle, prev_pointer = layer_pointer(layer, prev_turtle, prev_pointer)
-                    ask = True
-                    while ask:
-                        try:
-                            kort_man_vill_vända = input("vilket kort vill du vända? (1,2,3): ")
-                            pos_of_card = card_pos_dict_L3[kort_man_vill_vända]
-                            turn_card_face_up(current_random_card, pos_of_card)
-                            input("Press ENTER to continue")
-                            if current_random_card in [11,12,13,1]:
-                                print("Klätt Kort! Startar om!")
-                                turtle.Screen().clear()
-                                start_layout()
-                                visual_klunk_dict["klunkar"] += 3 # +3 klunkar till dict som skriver ut på skärm
-                                drink_take[confirmed_player] += 3
-                                ask = False
-                                layer = 1
-                                break
-                            elif current_random_card in [2,3,4,5,6,7,8,9,10]:
-                                ask = False
-                                layer += 1
-                                break
-                        except:
-                            print("Felaktig input. Försök igen")
-
-                elif layer == 3: # lager 2
-                    prev_turtle, prev_pointer = layer_pointer(layer, prev_turtle, prev_pointer)
-                    ask = True
-                    while ask:
-                        try:
-                            kort_man_vill_vända = input("vilket kort vill du vända? (1,2): ")
-                            #Fixa safe loop
-                            pos_of_card = card_pos_dict_L2[kort_man_vill_vända]
-                            turn_card_face_up(current_random_card, pos_of_card)
-                            input("Press ENTER to continue")
-                            if current_random_card in [11,12,13,1]:
-                                print("Klätt Kort! Startar om!")
-                                turtle.Screen().clear()
-                                start_layout()
-                                visual_klunk_dict["klunkar"] += 3 # +3 klunkar till dict som skriver ut på skärm
-                                drink_take[confirmed_player] += 3
-                                ask = False
-                                layer = 1
-                                break
-                            elif current_random_card in [2,3,4,5,6,7,8,9,10]:
-                                ask = False
-                                layer += 1
-                                break
-                        except:
-                            print("Felaktig input. Försök igen")
-                    
-                elif layer == 4: # lager 1 SISTA KORTET
-                    prev_turtle, prev_pointer = layer_pointer(layer, prev_turtle, prev_pointer)
-                    ask = True
-                    while ask:
-                        try:
-                            kort_man_vill_vända = input("Vänd det sista kortet! (1): ")
-                            #Fixa safe loop
-                            pos_of_card = card_pos_dict_L1[kort_man_vill_vända]
-                            turn_card_face_up(current_random_card, pos_of_card)
-                            input("Press ENTER to continue")
-                            if current_random_card in [11,12,13,1]:
-                                print("Klätt Kort! Startar om!")
-                                turtle.Screen().clear()
-                                start_layout()
-                                visual_klunk_dict["klunkar"] += 3 # +3 klunkar till dict som skriver ut på skärm
-                                drink_take[confirmed_player] += 3
-                                ask = False
-                                layer = 1
-                                break
-                            elif current_random_card in [2,3,4,5,6,7,8,9,10]:
-                                prev_turtle.hideturtle()
-                                print("DU HAR KLARAT BUSSEN!!!")
-                                ask = False
-                                buss_status = False
-                                layer += 1
-                                break
-                        except:
-                            print("Felaktig input. Försök igen")
-
-
-        print("GRATTIS MANNEN!!!")
-        print()
-
-        return drink_take
-
 def Bärka_Bussen(spelar_lista, drink_take):
 
     print_centre("------------------------------BÄRKA BUSSEN------------------------------\n")
@@ -1588,16 +1129,16 @@ def Bärka_Bussen(spelar_lista, drink_take):
     #TURTLE BILDER-----------------------
 
     def background(x, y, w, h):
-            t = make_turtle(x, y)
-            t.speed(0)
-            t.hideturtle()
-            t.color('black')
-            t.fillcolor("bisque2")
-            t.begin_fill()
-            for x in [w, h, w, h]:
-                t.forward(x)
-                t.left(90)
-            t.end_fill()
+        t = make_turtle(x, y)
+        t.speed(0)
+        t.hideturtle()
+        t.color('black')
+        t.fillcolor("bisque2")
+        t.begin_fill()
+        for x in [w, h, w, h]:
+            t.forward(x)
+            t.left(90)
+        t.end_fill()
 
     def card_face_down(x, y, w, h):
         t = make_turtle(x, y)
@@ -1764,213 +1305,212 @@ def Bärka_Bussen(spelar_lista, drink_take):
     #------------------------------------------------------------
     # fixa så att alla fyra kort är ngt random value. för just nu är det inte mening med flera kort
     # kanske vid varje iteration göra en dict med position = kort
-    if __name__ == "__main__":
 
-        player_number = 1
-        print(" Vem ska snurra The Wheel of Bärka? ")
-        for player in spelar_lista:
-            print(f'{player_number}: {player}')
-            player_number += 1
+    player_number = 1
+    print(" Vem ska snurra The Wheel of Bärka? ")
+    for player in spelar_lista:
+        print(f'{player_number}: {player}')
+        player_number += 1
 
-        ask = True
-        while ask:
-            try:
-                chosen_player = int(input("Vem ska köra bussen?: "))
-                print()
-                while chosen_player not in range(1,len(spelar_lista)+1):
-                    print("invalid input. try again")
-                    chosen_player = int(input("skriv numret på den valda spelaren: "))
-                for index in range(len(spelar_lista)+1):
-                    if index == chosen_player:
-                        confirmed_player = spelar_lista[index-1] # Detta är spelaren som kommer snurra hjulet
-                    
-                    ask = False
-            except:
-                print("felaktig input, försök igen: ")
+    ask = True
+    while ask:
+        try:
+            chosen_player = int(input("Vem ska köra bussen?: "))
+            print()
+            while chosen_player not in range(1,len(spelar_lista)+1):
+                print("invalid input. try again")
+                chosen_player = int(input("skriv numret på den valda spelaren: "))
+            for index in range(len(spelar_lista)+1):
+                if index == chosen_player:
+                    confirmed_player = spelar_lista[index-1] # Detta är spelaren som kommer snurra hjulet
+                
+                ask = False
+        except:
+            print("felaktig input, försök igen: ")
 
-        visual_klunk_dict = {"klunkar":0}
+    visual_klunk_dict = {"klunkar":0}
 
-        # Position på kort, för varje lager
-        card_pos_dict_L4 = {"1":(-275,-325), "2":(-125,-325), "3":(25,-325), "4":(175,-325)} # Layer 4
-        card_pos_dict_L3 = {"1":(-200,-150), "2":(-50,-150), "3":(100,-150)} # Layer 3
-        card_pos_dict_L2 = {"1":(-125,25), "2":(25,25)} # Layer 2
-        card_pos_dict_L1 = {"1":(-50 ,200)} # Layer 1, kanske man inte behöver skriva in input för denna
+    # Position på kort, för varje lager
+    card_pos_dict_L4 = {"1":(-275,-325), "2":(-125,-325), "3":(25,-325), "4":(175,-325)} # Layer 4
+    card_pos_dict_L3 = {"1":(-200,-150), "2":(-50,-150), "3":(100,-150)} # Layer 3
+    card_pos_dict_L2 = {"1":(-125,25), "2":(25,25)} # Layer 2
+    card_pos_dict_L1 = {"1":(-50 ,200)} # Layer 1, kanske man inte behöver skriva in input för denna
 
-        #card_pos_dict = {"1":(-275,-325), "2":(-125,-325), "3":(25,-325), "4":(175,-325), "5":(-200,-150), "6":(-50,-150), "7":(100,-150), "8":(-125,25), "9":(25,25), "10":(-50 ,200)}
+    #card_pos_dict = {"1":(-275,-325), "2":(-125,-325), "3":(25,-325), "4":(175,-325), "5":(-200,-150), "6":(-50,-150), "7":(100,-150), "8":(-125,25), "9":(25,25), "10":(-50 ,200)}
 
-        # Blanda korten på bordet:
-        value_list = [1,2,3,4,5,6,7,8,9,10,11,12,13]
-        start_layout()
+    # Blanda korten på bordet:
+    value_list = [1,2,3,4,5,6,7,8,9,10,11,12,13]
+    start_layout()
 
-        #Klunk Turtle
-        klunk_turtle = turtle.Turtle()
-        klunk_turtle.hideturtle()
-        klunk_turtle.penup()
+    #Klunk Turtle
+    klunk_turtle = turtle.Turtle()
+    klunk_turtle.hideturtle()
+    klunk_turtle.penup()
+    
+
+
+    # Max 4 rounds
+    layer = 1
+    buss_status = True
+    while buss_status:
+        while layer < 5: # runda 1 - 4
+            
+            klunk_turtle.clear()
+            klunk_turtle.goto(-400,325)
+            klunk_turtle.write(f'{confirmed_player}s',font=("Arial",40, "normal"))
+            klunk_turtle.goto(-400,280)
+            klunk_turtle.write(f'Klunkar: {visual_klunk_dict["klunkar"]}',font=("Arial",40, "normal"))
+
+
+            
+            print("round:",layer)
+
+            # SKAPELSE AV dict som har pos bunden till random val. riktiiig stökig kod men fk it
+            layer_4_pos_lst = [(-275,-325), (-125,-325),(25,-325),(175,-325)]
+            layer_3_pos_lst = [(-200,-150),(-50,-150),(100,-150)]
+            layer_2_pos_lst = [(-125,25),(25,25)]
+            layer_1_pos_lst = [(-50 ,200)]
+
+            random_card_dict_L4 = {(-275,-325):1 , (-125,-325):1 ,(25,-325):1 ,(175,-325):1 }
+            random_card_dict_L3 = {(-200,-150):1 ,(-50,-150):1 ,(100,-150):1 }
+            random_card_dict_L2 = {(-125,25):1 ,(25,25):1 }
+            random_card_dict_L1 = {(-50 ,200):1 }
+
+            for pos in layer_4_pos_lst: # Skapar pos och val dict för lager 4
+                randomval = random.choice(value_list)
+                random_card_dict_L4[pos] = randomval
+            
+            for pos in layer_3_pos_lst: # Skapar pos och val dict för lager 4
+                randomval = random.choice(value_list)
+                random_card_dict_L3[pos] = randomval
+
+            for pos in layer_2_pos_lst: # Skapar pos och val dict för lager 4
+                randomval = random.choice(value_list)
+                random_card_dict_L2[pos] = randomval
+
+            for pos in layer_1_pos_lst: # Skapar pos och val dict för lager 4
+                randomval = random.choice(value_list)
+                random_card_dict_L1[pos] = randomval
+
+            #print(random_card_dict_L4)
+            #print(random_card_dict_L3)
+            #print(random_card_dict_L2)
+            #print(random_card_dict_L1)
+            
         
 
+            if layer == 1: # 1 = lager 4 (yttre lagret)
+                prev_turtle, prev_pointer = layer_pointer(layer) # pekaren. returnerar sköldpaddan så man can cleara den vid ny runda
+                ask = True
+                while ask:
+                    try:
+                        kort_man_vill_vända = input("vilket kort vill du vända? (1,2,3,4): ")
+                        pos_of_card = card_pos_dict_L4[kort_man_vill_vända]
+                        chosen_random_card = random_card_dict_L4[pos_of_card]
+                        turn_card_face_up(chosen_random_card, pos_of_card)
+                        input("Press ENTER to continue")
+                        if chosen_random_card in [11,12,13,1]:
+                            print("Klätt Kort! Startar om!")
+                            turtle.Screen().clear()
+                            start_layout()
+                            visual_klunk_dict["klunkar"] += 3 # +3 klunkar till dict som skriver ut på skärm
+                            drink_take[confirmed_player] += 3 # +3 klunkar till den riktiga dict.
+                            ask = False
+                            layer = 1
+                            break
+                        elif chosen_random_card in [2,3,4,5,6,7,8,9,10]:
+                            ask = False
+                            layer += 1
+                            break
+                    except:
+                        print("Felaktig input. Försök igen")
 
-        # Max 4 rounds
-        layer = 1
-        buss_status = True
-        while buss_status:
-            while layer < 5: # runda 1 - 4
+            elif layer == 2: # lager 3
+                prev_turtle, prev_pointer = layer_pointer(layer, prev_turtle, prev_pointer)
+                ask = True
+                while ask:
+                    try:
+                        kort_man_vill_vända = input("vilket kort vill du vända? (1,2,3,4): ")
+                        pos_of_card = card_pos_dict_L3[kort_man_vill_vända]
+                        chosen_random_card = random_card_dict_L3[pos_of_card]
+                        turn_card_face_up(chosen_random_card, pos_of_card)
+                        input("Press ENTER to continue")
+                        if chosen_random_card in [11,12,13,1]:
+                            print("Klätt Kort! Startar om!")
+                            turtle.Screen().clear()
+                            start_layout()
+                            visual_klunk_dict["klunkar"] += 3 # +3 klunkar till dict som skriver ut på skärm
+                            drink_take[confirmed_player] += 3 # +3 klunkar till den riktiga dict.
+                            ask = False
+                            layer = 1
+                            break
+                        elif chosen_random_card in [2,3,4,5,6,7,8,9,10]:
+                            ask = False
+                            layer += 1
+                            break
+                    except:
+                        print("Felaktig input. Försök igen")
+                        
+            elif layer == 3: # lager 2
+                prev_turtle, prev_pointer = layer_pointer(layer, prev_turtle, prev_pointer)
+                ask = True
+                while ask:
+                    try:
+                        kort_man_vill_vända = input("vilket kort vill du vända? (1,2,3,4): ")
+                        pos_of_card = card_pos_dict_L2[kort_man_vill_vända]
+                        chosen_random_card = random_card_dict_L2[pos_of_card]
+                        turn_card_face_up(chosen_random_card, pos_of_card)
+                        input("Press ENTER to continue")
+                        if chosen_random_card in [11,12,13,1]:
+                            print("Klätt Kort! Startar om!")
+                            turtle.Screen().clear()
+                            start_layout()
+                            visual_klunk_dict["klunkar"] += 3 # +3 klunkar till dict som skriver ut på skärm
+                            drink_take[confirmed_player] += 3 # +3 klunkar till den riktiga dict.
+                            ask = False
+                            layer = 1
+                            break
+                        elif chosen_random_card in [2,3,4,5,6,7,8,9,10]:
+                            ask = False
+                            layer += 1
+                            break
+                    except:
+                        print("Felaktig input. Försök igen")
                 
-                klunk_turtle.clear()
-                klunk_turtle.goto(-400,325)
-                klunk_turtle.write(f'{confirmed_player}s',font=("Arial",40, "normal"))
-                klunk_turtle.goto(-400,280)
-                klunk_turtle.write(f'Klunkar: {visual_klunk_dict["klunkar"]}',font=("Arial",40, "normal"))
+            elif layer == 4: # lager 1 SISTA KORTET
+                prev_turtle, prev_pointer = layer_pointer(layer, prev_turtle, prev_pointer)
+                ask = True
+                while ask:
+                    try:
+                        kort_man_vill_vända = input("vilket kort vill du vända? (1,2,3,4): ")
+                        pos_of_card = card_pos_dict_L1[kort_man_vill_vända]
+                        chosen_random_card = random_card_dict_L1[pos_of_card]
+                        turn_card_face_up(chosen_random_card, pos_of_card)
+                        input("Press ENTER to continue")
+                        if chosen_random_card in [11,12,13,1]:
+                            print("Klätt Kort! Startar om!")
+                            turtle.Screen().clear()
+                            start_layout()
+                            visual_klunk_dict["klunkar"] += 3 # +3 klunkar till dict som skriver ut på skärm
+                            drink_take[confirmed_player] += 3 # +3 klunkar till den riktiga dict.
+                            ask = False
+                            layer = 1
+                            break
+                        elif chosen_random_card in [2,3,4,5,6,7,8,9,10]:
+                            prev_turtle.hideturtle()
+                            print("DU HAR KLARAT BUSSEN!!!")
+                            ask = False
+                            buss_status = False
+                            layer += 1
+                            break
+                    except:
+                        print("Felaktig input. Försök igen")
 
 
-                
-                print("round:",layer)
+    print("GRATTIS MANNEN!!!")
+    print()
 
-                # SKAPELSE AV dict som har pos bunden till random val. riktiiig stökig kod men fk it
-                layer_4_pos_lst = [(-275,-325), (-125,-325),(25,-325),(175,-325)]
-                layer_3_pos_lst = [(-200,-150),(-50,-150),(100,-150)]
-                layer_2_pos_lst = [(-125,25),(25,25)]
-                layer_1_pos_lst = [(-50 ,200)]
-
-                random_card_dict_L4 = {(-275,-325):1 , (-125,-325):1 ,(25,-325):1 ,(175,-325):1 }
-                random_card_dict_L3 = {(-200,-150):1 ,(-50,-150):1 ,(100,-150):1 }
-                random_card_dict_L2 = {(-125,25):1 ,(25,25):1 }
-                random_card_dict_L1 = {(-50 ,200):1 }
-
-                for pos in layer_4_pos_lst: # Skapar pos och val dict för lager 4
-                    randomval = random.choice(value_list)
-                    random_card_dict_L4[pos] = randomval
-                
-                for pos in layer_3_pos_lst: # Skapar pos och val dict för lager 4
-                    randomval = random.choice(value_list)
-                    random_card_dict_L3[pos] = randomval
-
-                for pos in layer_2_pos_lst: # Skapar pos och val dict för lager 4
-                    randomval = random.choice(value_list)
-                    random_card_dict_L2[pos] = randomval
-
-                for pos in layer_1_pos_lst: # Skapar pos och val dict för lager 4
-                    randomval = random.choice(value_list)
-                    random_card_dict_L1[pos] = randomval
-
-                #print(random_card_dict_L4)
-                #print(random_card_dict_L3)
-                #print(random_card_dict_L2)
-                #print(random_card_dict_L1)
-                
-            
-
-                if layer == 1: # 1 = lager 4 (yttre lagret)
-                    prev_turtle, prev_pointer = layer_pointer(layer) # pekaren. returnerar sköldpaddan så man can cleara den vid ny runda
-                    ask = True
-                    while ask:
-                        try:
-                            kort_man_vill_vända = input("vilket kort vill du vända? (1,2,3,4): ")
-                            pos_of_card = card_pos_dict_L4[kort_man_vill_vända]
-                            chosen_random_card = random_card_dict_L4[pos_of_card]
-                            turn_card_face_up(chosen_random_card, pos_of_card)
-                            input("Press ENTER to continue")
-                            if chosen_random_card in [11,12,13,1]:
-                                print("Klätt Kort! Startar om!")
-                                turtle.Screen().clear()
-                                start_layout()
-                                visual_klunk_dict["klunkar"] += 3 # +3 klunkar till dict som skriver ut på skärm
-                                drink_take[confirmed_player] += 3 # +3 klunkar till den riktiga dict.
-                                ask = False
-                                layer = 1
-                                break
-                            elif chosen_random_card in [2,3,4,5,6,7,8,9,10]:
-                                ask = False
-                                layer += 1
-                                break
-                        except:
-                            print("Felaktig input. Försök igen")
-
-                elif layer == 2: # lager 3
-                    prev_turtle, prev_pointer = layer_pointer(layer, prev_turtle, prev_pointer)
-                    ask = True
-                    while ask:
-                        try:
-                            kort_man_vill_vända = input("vilket kort vill du vända? (1,2,3,4): ")
-                            pos_of_card = card_pos_dict_L3[kort_man_vill_vända]
-                            chosen_random_card = random_card_dict_L3[pos_of_card]
-                            turn_card_face_up(chosen_random_card, pos_of_card)
-                            input("Press ENTER to continue")
-                            if chosen_random_card in [11,12,13,1]:
-                                print("Klätt Kort! Startar om!")
-                                turtle.Screen().clear()
-                                start_layout()
-                                visual_klunk_dict["klunkar"] += 3 # +3 klunkar till dict som skriver ut på skärm
-                                drink_take[confirmed_player] += 3 # +3 klunkar till den riktiga dict.
-                                ask = False
-                                layer = 1
-                                break
-                            elif chosen_random_card in [2,3,4,5,6,7,8,9,10]:
-                                ask = False
-                                layer += 1
-                                break
-                        except:
-                            print("Felaktig input. Försök igen")
-                            
-                elif layer == 3: # lager 2
-                    prev_turtle, prev_pointer = layer_pointer(layer, prev_turtle, prev_pointer)
-                    ask = True
-                    while ask:
-                        try:
-                            kort_man_vill_vända = input("vilket kort vill du vända? (1,2,3,4): ")
-                            pos_of_card = card_pos_dict_L2[kort_man_vill_vända]
-                            chosen_random_card = random_card_dict_L2[pos_of_card]
-                            turn_card_face_up(chosen_random_card, pos_of_card)
-                            input("Press ENTER to continue")
-                            if chosen_random_card in [11,12,13,1]:
-                                print("Klätt Kort! Startar om!")
-                                turtle.Screen().clear()
-                                start_layout()
-                                visual_klunk_dict["klunkar"] += 3 # +3 klunkar till dict som skriver ut på skärm
-                                drink_take[confirmed_player] += 3 # +3 klunkar till den riktiga dict.
-                                ask = False
-                                layer = 1
-                                break
-                            elif chosen_random_card in [2,3,4,5,6,7,8,9,10]:
-                                ask = False
-                                layer += 1
-                                break
-                        except:
-                            print("Felaktig input. Försök igen")
-                    
-                elif layer == 4: # lager 1 SISTA KORTET
-                    prev_turtle, prev_pointer = layer_pointer(layer, prev_turtle, prev_pointer)
-                    ask = True
-                    while ask:
-                        try:
-                            kort_man_vill_vända = input("vilket kort vill du vända? (1,2,3,4): ")
-                            pos_of_card = card_pos_dict_L1[kort_man_vill_vända]
-                            chosen_random_card = random_card_dict_L1[pos_of_card]
-                            turn_card_face_up(chosen_random_card, pos_of_card)
-                            input("Press ENTER to continue")
-                            if chosen_random_card in [11,12,13,1]:
-                                print("Klätt Kort! Startar om!")
-                                turtle.Screen().clear()
-                                start_layout()
-                                visual_klunk_dict["klunkar"] += 3 # +3 klunkar till dict som skriver ut på skärm
-                                drink_take[confirmed_player] += 3 # +3 klunkar till den riktiga dict.
-                                ask = False
-                                layer = 1
-                                break
-                            elif chosen_random_card in [2,3,4,5,6,7,8,9,10]:
-                                prev_turtle.hideturtle()
-                                print("DU HAR KLARAT BUSSEN!!!")
-                                ask = False
-                                buss_status = False
-                                layer += 1
-                                break
-                        except:
-                            print("Felaktig input. Försök igen")
-
-
-        print("GRATTIS MANNEN!!!")
-        print()
-
-        return drink_take
+    return drink_take
 
 # Roulette, siffror och färg
 

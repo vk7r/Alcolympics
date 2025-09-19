@@ -10,7 +10,7 @@ from rich.table import Table
 from rich.text import Text
 from rich.prompt import Confirm
 
-from artifacts.BarkaOlympicsV2 import main
+from artifacts.BarkaOlympicsV2 import main as barka_main
 
 # Import database functions
 sys.path.append(os.path.join(os.path.dirname(__file__), 'database'))
@@ -280,7 +280,7 @@ def main_menu():
             console.print("\n[bold hot_pink3]Thanks for playing! Goodbye! 🍻[/bold hot_pink3]\n")
             sys.exit()
         elif choice == "-1":
-            main()
+            barka_main()
             break
 
 
@@ -334,7 +334,10 @@ def start_playing():
     console.print(final_panel, justify="center")
     
     time.sleep(2)
-    
+
+    if not game_session.players:
+        add_players()
+
     # Start main game loop
     main_game_loop()
 
@@ -361,7 +364,7 @@ def add_players():
             player_list = ", ".join(game_session.players)
             console.print(f"\n[bold hot_pink3]Current players:[/bold hot_pink3] {player_list}")
         
-        name = Prompt.ask("\n[bold hot_pink3]Enter player name (or 'done' to finish)[/bold hot_pink3]")
+        name = Prompt.ask("\n[bold hot_pink3]Enter player name (or 'done' to finish)[/bold hot_pink3]", show_choices=False)
         
         if name.lower() == 'done':
             if len(game_session.players) < 1:
@@ -419,17 +422,17 @@ def game_selection_menu():
         return False
     
     # Build dynamic menu
-    menu_text = "\n\n════════════════════════════════════════════\n\n"
-    
+    menu_text = "\n\n═════════════════════════════════════════════════════════\n\n"
     for i, game in enumerate(available_games, 1):
         # Format game name (capitalize and replace underscores with spaces)
         display_name = game.replace('_', ' ').title()
         menu_text += f"[bold cyan]{i}.[/bold cyan]  {display_name}\n\n"
-    
-    # Add back to main menu option
-    back_option = len(available_games) + 1
+    manage_option = len(available_games) + 1
+    back_option = len(available_games) + 2
+    menu_text += "\n\n════════════════════════════════════════════\n\n"
+    menu_text += f"[bold cyan]{manage_option}.[/bold cyan]  MANAGE PLAYERS\n\n"
     menu_text += f"[bold cyan]{back_option}.[/bold cyan]  BACK TO MAIN MENU\n\n"
-    menu_text += "════════════════════════════════════════════\n\n"
+    menu_text += "═════════════════════════════════════════════════════════\n\n"
     
     games_panel = Panel(
         Align.center(
@@ -452,11 +455,11 @@ def game_selection_menu():
     console.print(games_panel, justify="center")
     
     # Create valid choices list
-    valid_choices = [str(i) for i in range(1, len(available_games) + 2)]
+    valid_choices = [str(i) for i in range(1, len(available_games) + 3)]
     
     while True:
-        choice = Prompt.ask(f"[bold hot_pink3]>>> Select a game (1-{len(available_games) + 1})[/bold hot_pink3]", 
-                          choices=valid_choices)
+        choice = Prompt.ask(f"[bold hot_pink3]>>> Select a game (1-{len(available_games) + 2})[/bold hot_pink3]", 
+                          choices=valid_choices, show_choices=False)
         
         choice_num = int(choice)
         
@@ -475,30 +478,96 @@ def game_selection_menu():
             else:
                 console.print(f"\n[bold red]❌ Error running {selected_game.replace('_', ' ').title()}[/bold red]")
             
-            # Ask if they want to play another game
-            play_again = Confirm.ask("\n[bold hot_pink3]Play another game?[/bold hot_pink3]")
-            return play_again
-            
+            time.sleep(2)
+            return True
+        elif choice_num == manage_option:
+            manage_players()
+            console.clear()
+            return True
         else:
-            # Back to main menu
             return False
 
-def main_game_loop():
-    """Main game loop - add players then game selection"""
+def manage_players():
     while True:
-        # First, add players if none exist
-        if not game_session.players:
-            add_players()
-        
+        console.clear()
+        player_list = ", ".join(game_session.players) if game_session.players else "[none]"
+        panel = Panel(
+            Align.center(
+                f"\n[bold hot_pink3]MANAGE PLAYERS[/bold hot_pink3]\n\n"
+                f"[bold]Current players:[/bold] {player_list}\n\n"
+                "[bold cyan]1.[/bold cyan] Add player\n"
+                "[bold cyan]2.[/bold cyan] Remove player\n"
+                "[bold cyan]3.[/bold cyan] Restart session (remove all)\n"
+                "[bold cyan]4.[/bold cyan] Back to game menu\n",
+                vertical="middle"
+            ),
+            border_style="hot_pink3",
+            width=70,
+            height=16,
+            padding=(2, 5),
+            style="on grey11"
+        )
+        console.print(panel, justify="center")
+        choice = Prompt.ask("[bold hot_pink3]>>> Select an option (1-4)[/bold hot_pink3]", choices=["1","2","3","4"], show_choices=False)
+        if choice == "1":
+            name = Prompt.ask("[bold hot_pink3]Enter new player name[/bold hot_pink3]", show_choices=False)
+            if name and name not in game_session.players:
+                game_session.players.append(name)
+                if db.player_exists(name):
+                    console.print(f"[yellow]⚠ {name} already exists in today's database, continuing on same stats[/yellow]")
+                    game_session.stats[name] = GameStats()
+                    existing = db.get_player(name)
+                    if existing:
+                        game_session.stats[name].klunkar_druckna = existing.get("klunkar_druckna", 0)
+                        game_session.stats[name].klunkar_givna = existing.get("klunkar_givna", 0)
+                        game_session.stats[name].Ws = existing.get("Ws", 0)
+                        game_session.stats[name].Ls = existing.get("Ls", 0)
+                        game_session.stats[name].games_played = existing.get("games_played", 0)
+                else:
+                    game_session.stats[name] = GameStats()
+                    console.print(f"[green]✓ Added {name}[/green]")
+                    db.add_player(name)
+            else:
+                console.print("[red]Player already exists or invalid![/red]")
+            time.sleep(2)
+        elif choice == "2":
+            if not game_session.players:
+                console.print("[red]No players to remove![/red]")
+                time.sleep(1)
+                continue
+            name = Prompt.ask("[bold hot_pink3]Enter player name to remove[/bold hot_pink3]", choices=game_session.players)
+            if name in game_session.players:
+                game_session.players.remove(name)
+                console.print(f"[yellow]Removed {name}[/yellow]")
+                time.sleep(1)
+        elif choice == "3":
+            confirm = Confirm.ask("[bold red]Are you sure you want to restart the session? This will remove all players![/bold red]")
+            if confirm:
+                game_session.players = []
+                console.print("[red]Session restarted. All players removed.[/red]")
+                time.sleep(1)
+                add_players()
+                main_game_loop()
+                break
+        elif choice == "4":
+            if not game_session.players:
+                console.print("[red]You must have at least one player to continue![/red]")
+                time.sleep(1)
+                continue
+            break
+
+def main_game_loop():
+    """Main game loop"""
+    while True:     
         # Game selection menu
         continue_playing = game_selection_menu()
-        
         
         if not continue_playing:
             # Ask if they want to start a new session or return to main menu
             new_session = Confirm.ask("\n[bold hot_pink3]Start a new game session?[/bold hot_pink3]")
             if new_session:
                 game_session.players = []  # Reset players
+                add_players()
                 continue
             else:
                 break  # Return to main menu
@@ -523,9 +592,9 @@ def view_leaderboard():
     table.add_column("RANK", style="bold yellow", justify="center", width=15)
     table.add_column("PLAYER", style="bold white", justify="center", width=25)
     table.add_column("WINS", style="bold hot_pink3", justify="center", width=15)
-    table.add_column("GAMES", style="bold", justify="center", width=15)
-    table.add_column("DRINKS", style="bold cyan", justify="center", width=15)
-    
+    table.add_column("GAMES PLAYED", style="bold", justify="center", width=15)
+    table.add_column("DRINKS TAKEN", style="bold cyan", justify="center", width=15)
+    table.add_column("DATE", style="bold magenta", justify="center", width=25)
     try:
         # Get leaderboard data from database
         wins_leaderboard = db.leaderboard_by_wins(10)
@@ -544,23 +613,29 @@ def view_leaderboard():
             rank_display = f"{medals[i]} {i+1}" if i < 3 else f"  {i+1}"
             games = games_dict.get(name, 0)
             drinks = drinks_dict.get(name, 0)
-            leaderboard.append((rank_display, name, str(wins), str(games), str(drinks)))
+            # Get the latest date for this player
+            history = db.get_player_history(name)
+            if history:
+                latest_entry = max(history, key=lambda x: x["date"])
+                date = latest_entry["date"]
+            else:
+                date = "-"
+            leaderboard.append((rank_display, name, str(wins), str(games), str(drinks), date))
     
     except Exception as e:
         # Fallback to placeholder data if database is empty or has issues
         leaderboard = [
-            ("🥇 1st", "Alice", "42", "7", "15"),
-            ("🥈 2nd", "Bob", "37", "6", "12"),
-            ("🥉 3rd", "Charlie", "29", "5", "10"),
-            ("  4th", "David", "24", "4", "8"),
-            ("  5th", "Eve", "18", "3", "6"),
+            ("🥇 1st", "Alice", "42", "7", "15", "2023-10-01"),
+            ("🥈 2nd", "Bob", "37", "6", "12", "2023-09-28"),
+            ("🥉 3rd", "Charlie", "29", "5", "10", "2023-09-25"),
+            ("  4th", "David", "24", "4", "8", "2023-09-20"),
+            ("  5th", "Eve", "18", "3", "6", "2023-09-15"),
         ]
     
     if not leaderboard:
-        leaderboard = [("--", "No players yet!", "0", "0", "0")]
-    
-    for rank, name, wins, games, drinks in leaderboard:
-        table.add_row(rank, name, wins, games, drinks)
+        leaderboard = [("--", "No players yet!", "0", "0", "0", "-")]
+    for rank, name, wins, games, drinks, date in leaderboard:
+        table.add_row(rank, name, wins, games, drinks, date)
     
     # Center the table in a panel
     leaderboard_panel = Panel(

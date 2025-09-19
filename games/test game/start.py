@@ -1,4 +1,4 @@
-from alcolympics_tui import GameSession, GameStats
+from main import GameSession, GameStats
 def start_game(gamesession: GameSession):
     game_stats = {}
     for player in gamesession.players:
